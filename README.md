@@ -153,6 +153,7 @@ Contains the same structure as Client-1 but with UUID: `1b3374ba-71ca-4c7f-9287-
 
 | File | Purpose |
 |------|---------|
+| `frontend/` | **NEW!** Web interface for config management |
 | `setup_vless_v2box.sh` | Main setup script for V2Ray + VLESS |
 | `generate_vless_uris.sh` | Generate VLESS URIs for copy-paste import |
 | `download_configs.sh` | Downloads client configs from server |
@@ -328,14 +329,40 @@ scp -i ~/.ssh/oracle-vless-key.pem ubuntu@217.142.186.18:/root/vless_client_conf
 - **Client App**: V2Box (iOS/Android)
 - **WebSocket Path**: `/vless`
 
+## 🌐 Web Interface (Frontend)
+
+The project now includes a modern Next.js web interface for managing your VLESS configurations:
+
+### Features
+- **Server Monitoring**: Real-time server status and V2Ray service monitoring
+- **Config Management**: Create, edit, and delete configurations through a clean UI
+- **Ping Testing**: Automatic connectivity testing with color-coded status indicators
+- **Export Tools**: One-click VLESS URI copying and JSON config downloads
+- **Responsive Design**: Works on desktop and mobile devices
+- **Dark Mode**: Modern UI with dark theme support
+
+### Quick Start
+```bash
+cd frontend
+npm install
+npm run dev
+# Open http://localhost:3000
+```
+
+### Architecture
+- **Frontend**: Next.js 14 with TypeScript and Tailwind CSS
+- **Backend**: Next.js API routes handle SSH communication
+- **Security**: Direct SSH connection to your VPS (no sensitive data stored)
+
 ## 🤝 Contributing
 
 To modify or improve this setup:
 
 1. Edit `setup_vless_v2box.sh` for server changes
 2. Update client configs by re-running setup
-3. Test thoroughly before deploying
-4. Update this README with any changes
+3. Modify `frontend/` for UI improvements
+4. Test thoroughly before deploying
+5. Update this README with any changes
 
 ---
 
