@@ -44,6 +44,11 @@ Generate copy-paste URIs for V2Box:
 ```
 Copy any URI and paste it into V2Box using "Import v2ray uri from clipboard"
 
+**Custom Client Names**: You can specify custom names instead of "Client-1", "Client-2", etc.:
+```bash
+CLIENT_NAMES="iPhone,MacBook,Android" ./generate_vless_uris.sh
+```
+
 ### 4. Download Client Configs (Alternative - JSON Files)
 ```bash
 ./download_configs.sh
@@ -63,6 +68,10 @@ Three client configurations have been generated. You can import them into V2Box 
 Generate and copy VLESS URIs using:
 ```bash
 ./generate_vless_uris.sh
+```
+Or with custom names:
+```bash
+CLIENT_NAMES="iPhone,MacBook,Android" ./generate_vless_uris.sh
 ```
 Then in V2Box: `+` → `Import v2ray uri from clipboard` → Paste URI
 

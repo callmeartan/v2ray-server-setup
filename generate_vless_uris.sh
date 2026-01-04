@@ -27,6 +27,7 @@ SERVER_IP="${SERVER_IP:-217.142.186.18}"
 SSH_KEY="${SSH_KEY:-~/.ssh/oracle-vless-key.pem}"
 SSH_USER="${SSH_USER:-ubuntu}"
 CONFIG_PATH="/etc/v2ray/config.json"
+CLIENT_NAMES="${CLIENT_NAMES:-}"
 
 echo "🔍 Reading V2Ray server configuration..."
 echo ""
@@ -83,14 +84,21 @@ echo ""
 
 # Generate URIs for each client
 CLIENT_NUM=1
+# Parse custom client names if provided
+if [[ -n "$CLIENT_NAMES" ]]; then
+    IFS=',' read -ra CUSTOM_NAMES <<< "$CLIENT_NAMES"
+fi
+
 if command -v jq &> /dev/null; then
     # Process with jq
     while IFS= read -r client; do
         UUID=$(echo "$client" | jq -r '.id')
         EMAIL=$(echo "$client" | jq -r '.email // ""')
-        
-        # Extract client name from email or use default
-        if [[ "$EMAIL" == *"@local" ]]; then
+
+        # Extract client name from custom names, email, or use default
+        if [[ -n "$CLIENT_NAMES" && $CLIENT_NUM -le ${#CUSTOM_NAMES[@]} ]]; then
+            CLIENT_NAME="${CUSTOM_NAMES[$((CLIENT_NUM-1))]}"
+        elif [[ "$EMAIL" == *"@local" ]]; then
             CLIENT_NAME=$(echo "$EMAIL" | sed 's/@local//')
         else
             CLIENT_NAME="Client-$CLIENT_NUM"
@@ -113,7 +121,12 @@ if command -v jq &> /dev/null; then
 else
     # Fallback: process UUIDs from grep
     while IFS= read -r UUID; do
-        CLIENT_NAME="Client-$CLIENT_NUM"
+        # Extract client name from custom names or use default
+        if [[ -n "$CLIENT_NAMES" && $CLIENT_NUM -le ${#CUSTOM_NAMES[@]} ]]; then
+            CLIENT_NAME="${CUSTOM_NAMES[$((CLIENT_NUM-1))]}"
+        else
+            CLIENT_NAME="Client-$CLIENT_NUM"
+        fi
         
         # URL encode path and host
         PATH_ENCODED=$(urlencode "$PATH_VAL")
