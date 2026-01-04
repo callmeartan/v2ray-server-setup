@@ -344,9 +344,10 @@ The project now includes a modern Next.js web interface for managing your VLESS 
 
 ### Features
 - **Server Monitoring**: Real-time server status and V2Ray service monitoring
-- **Config Management**: Create, edit, and delete configurations through a clean UI
+- **Config Management**: View server configuration and client details through a clean UI
+- **VLESS URI Generator**: One-click generation and copying of VLESS URIs for V2Box import
+- **Config Downloader**: Download V2Box-compatible JSON configuration files
 - **Ping Testing**: Automatic connectivity testing with color-coded status indicators
-- **Export Tools**: One-click VLESS URI copying and JSON config downloads
 - **Responsive Design**: Works on desktop and mobile devices
 - **Dark Mode**: Modern UI with dark theme support
 
@@ -354,14 +355,17 @@ The project now includes a modern Next.js web interface for managing your VLESS 
 ```bash
 cd frontend
 npm install
+cp env-example.txt .env.local
+# Edit .env.local with your server details
 npm run dev
 # Open http://localhost:3000
 ```
 
 ### Architecture
 - **Frontend**: Next.js 14 with TypeScript and Tailwind CSS
-- **Backend**: Next.js API routes handle SSH communication
+- **Backend**: Next.js API routes handle SSH communication with your server
 - **Security**: Direct SSH connection to your VPS (no sensitive data stored)
+- **State Management**: React Query for efficient data fetching and caching
 
 ## 🤝 Contributing
 
