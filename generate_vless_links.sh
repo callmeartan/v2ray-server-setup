@@ -12,7 +12,7 @@ BLUE='\033[0;34m'
 NC='\033[0m' # No Color
 
 # Configuration
-SERVER_IP="${SERVER_IP:-217.142.186.18}"
+SERVER_IP="${SERVER_IP:-140.245.51.205}"
 SSH_KEY="${SSH_KEY:-~/.ssh/oracle-vless-key.pem}"
 SSH_USER="${SSH_USER:-ubuntu}"
 CONFIG_PATH="/usr/local/etc/v2ray/config.json"
@@ -77,76 +77,52 @@ if ! command -v jq &> /dev/null; then
     exit 1
 fi
 
-# Parse configuration
-# ==========================================
-#  VLESS-REALITY Link Generator
-# ==========================================
 
-# Reality Settings
-PBK="pxnYDBxl1az-cGH68dxXLAqNNMda5b2w2P-lLX6SyAA"
-SNI="www.microsoft.com"
-FP="chrome"
-FLOW="xtls-rprx-vision"
-SID="" # ShortID (optional, using empty for now)
+# ==========================================
+#  VLESS Link Generator (Simplified)
+# ==========================================
 
 echo -e "${GREEN}════════════════════════════════════════════════════════════${NC}"
-echo -e "${GREEN}� VLESS-REALITY Links (Vision Flow)${NC}"
+echo -e "${GREEN}🚀 VLESS Connection Link (Working Configuration)${NC}"
 echo -e "${GREEN}════════════════════════════════════════════════════════════${NC}"
 echo ""
 
-# ==========================================
-#  Multi-Protocol VLESS Link Generator
-# ==========================================
+# Current working UUID
+UUID="f5414710-1226-4fd7-ab00-8c2abb3e4edf"
+CLIENT_NAME="Arman-Vip-Xray"
 
-# Reality Settings
-PBK="pxnYDBxl1az-cGH68dxXLAqNNMda5b2w2P-lLX6SyAA"
-SNI="www.microsoft.com"
-FP="chrome"
-FLOW="xtls-rprx-vision"
+# Generate the simple, working link
+NAME_ENCODED=$(urlencode "$CLIENT_NAME")
+URI="vless://${UUID}@${SERVER_IP}:80?encryption=none&type=tcp#${NAME_ENCODED}"
 
-echo -e "${GREEN}════════════════════════════════════════════════════════════${NC}"
-echo -e "${GREEN}🚀 VLESS Connection Links (All Methods)${NC}"
-echo -e "${GREEN}════════════════════════════════════════════════════════════${NC}"
+echo -e "${BLUE}📱 Your VLESS Connection Link:${NC}"
 echo ""
-
-# We use the UUIDs we know are in the config
-# (Hardcoded based on what we just pushed to the server to ensure consistency)
-UUIDS=("f5414710-1226-4fd7-ab00-8c2abb3e4edf" "b84b349d-e8af-45d9-85d9-08bc561afb62" "1b3374ba-71ca-4c7f-9287-f80451134b97")
-NAMES=("Client-1" "Client-2" "Client-3")
-
-for i in "${!UUIDS[@]}"; do
-    UUID="${UUIDS[$i]}"
-    NAME="${NAMES[$i]}"
-    
-    echo -e "${BLUE}👤 ${NAME}${NC}"
-
-    # 1. REALITY (Vision) - Best Security
-    NAME_REALITY=$(urlencode "${NAME}-Reality")
-    URI_REALITY="vless://${UUID}@${SERVER_IP}:443?security=reality&encryption=none&pbk=${PBK}&fp=${FP}&type=tcp&flow=${FLOW}&sni=${SNI}#${NAME_REALITY}"
-    echo -e "   ${YELLOW}🔸 Option 1: VLESS-REALITY (Best Security)${NC}"
-    echo -e "   ${GREEN}${URI_REALITY}${NC}"
-    echo ""
-
-    # 2. TCP (Port 80) - Fallback if TLS blocked
-    NAME_TCP=$(urlencode "${NAME}-TCP-80")
-    URI_TCP="vless://${UUID}@${SERVER_IP}:80?security=none&encryption=none&type=tcp#${NAME_TCP}"
-    echo -e "   ${YELLOW}� Option 2: VLESS-TCP (Port 80 - No TLS)${NC}"
-    echo -e "   ${GREEN}${URI_TCP}${NC}"
-    echo ""
-
-    # 3. WebSocket (Port 8080) - Alternate
-    NAME_WS=$(urlencode "${NAME}-WS-8080")
-    # Note: path is /vless
-    URI_WS="vless://${UUID}@${SERVER_IP}:8080?security=none&encryption=none&type=ws&path=%2Fvless#${NAME_WS}"
-    echo -e "   ${YELLOW}🔸 Option 3: VLESS-WebSocket (Port 8080)${NC}"
-    echo -e "   ${GREEN}${URI_WS}${NC}"
-    echo ""
-    
-    echo "   --------------------------------------------------------"
-    echo ""
-done
-
-echo -e "${YELLOW}ℹ️  TROUBLESHOOTING:${NC}"
-echo -e "   1. Try 'Option 2' (TCP/80) first if you have no ping."
-echo -e "   2. 'Option 1' (Reality) requires Xray-core in your client settings."
+echo -e "${GREEN}${URI}${NC}"
+echo ""
+echo -e "${YELLOW}════════════════════════════════════════════════════════════${NC}"
+echo -e "${YELLOW}📋 Connection Details:${NC}"
+echo -e "${YELLOW}════════════════════════════════════════════════════════════${NC}"
+echo ""
+echo "  Server IP:    ${SERVER_IP}"
+echo "  Port:         80"
+echo "  UUID:         ${UUID}"
+echo "  Protocol:     VLESS over TCP"
+echo "  Encryption:   None (plain)"
+echo ""
+echo -e "${BLUE}🔧 How to Use:${NC}"
+echo ""
+echo "  1. Copy the link above (starts with vless://)"
+echo "  2. Open your V2Box/V2RayNG/V2RayN app"
+echo "  3. Tap '+' or 'Add' button"
+echo "  4. Select 'Import from Clipboard'"
+echo "  5. The config will be imported automatically"
+echo "  6. Connect and enjoy!"
+echo ""
+echo -e "${YELLOW}⚠️  Important Notes:${NC}"
+echo ""
+echo "  • This is a simplified configuration that works reliably"
+echo "  • No TLS/encryption for maximum compatibility"
+echo "  • Server has IP forwarding and NAT configured"
+echo "  • If connection fails, your server IP may be blocked by your ISP"
+echo "  • To change IP: See CHANGE_IP_ORACLE.md"
 echo ""

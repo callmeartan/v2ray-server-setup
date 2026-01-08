@@ -1,385 +1,255 @@
 # VLESS VPN Server - Oracle Cloud Setup
 
-A complete VLESS VPN server setup running on Oracle Cloud with V2Ray core. This project provides automated setup scripts and comprehensive documentation for deploying and maintaining a secure VPN server.
+A simplified and reliable VLESS VPN server setup running on Oracle Cloud with Xray-core. This project provides automated scripts for deploying a working VPN server with maximum compatibility.
 
 ## 📋 Project Overview
 
-- **Server Location**: Oracle Cloud (Singapore)
-- **Protocol**: VLESS + WebSocket
-- **Port**: 443 (HTTPS)
-- **TLS**: Disabled (IP-only setup)
-- **Client App**: V2Box compatible
+- **Server Location**: Oracle Cloud
+- **Protocol**: VLESS over TCP (simplified)
+- **Port**: 80 (HTTP - for maximum compatibility)
+- **Core**: Xray 25.12.8
+- **Encryption**: None (plain TCP for reliability)
+- **Client App**: V2Box, V2RayNG, V2RayN compatible
 
-## 🔑 Server Connection Information
+## 🔑 Current Server Information
+
+### Server Details
+```
+Public IP:  140.245.51.205
+Private IP: 10.0.0.121
+Port:       80
+Protocol:   VLESS/TCP
+UUID:       f5414710-1226-4fd7-ab00-8c2abb3e4edf
+```
 
 ### SSH Access
-```
-Host: 217.142.186.18
-User: ubuntu
-Port: 22
-Key: ~/.ssh/oracle-vless-key.pem
-```
-
-### SSH Public Key (for reference)
-```
-ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAABAQC2Vkz7G8wdhkZSJ74uQqylMUSHcuPiK4NOB0RscJED22Qqah1y0PWTSkMgcDaLhuGucjDc94lSyIvLvZ5duL60f8+xPfLPI6dVbJ9UqSLRi0yv0pFZeDv+kfHI+gUCzG/Y3hNSUfFsKZmyeyydxT+6pBAv8/wQm10HR31XPEaDokehKhubuqnNH5um9VpPy02XbH2EpTP1L7sr9yKj5ZwEIv8q9zb7uHPBUSGmc/G9tfW0QBLW6z+6/u3xUmMERNmKExnBvUKLtbyLCFuUncWGLdzEn+HuXUJrW5ctDX1Mt/fLTPSyv1UbUXlg8FE0bakUPI48h+wBuiax5U/LN9H/ ssh-key-2026-01-04
+```bash
+ssh -i ssh-key-2026-01-04.key ubuntu@140.245.51.205
 ```
 
 ## 🚀 Quick Start
 
-### 1. SSH into Server
+### 1. Generate Your VLESS Link
 ```bash
-ssh -i ~/.ssh/oracle-vless-key.pem ubuntu@217.142.186.18
+./generate_vless_links.sh
 ```
 
-### 2. Run Setup Script
-```bash
-sudo /tmp/setup_vless_v2box.sh
-```
+This will output a ready-to-use VLESS URI that you can copy and paste into your V2Box/V2RayNG app.
 
-### 3. Generate VLESS URIs (Recommended - Easiest Method)
-Generate copy-paste URIs for V2Box:
-```bash
-./generate_vless_uris.sh
-```
-Copy any URI and paste it into V2Box using "Import v2ray uri from clipboard"
+### 2. Import into Your VPN Client
 
-**Custom Client Names**: You can specify custom names instead of "Client-1", "Client-2", etc.:
-```bash
-CLIENT_NAMES="iPhone,MacBook,Android" ./generate_vless_uris.sh
-```
+**For V2Box (iOS/Android):**
+1. Copy the VLESS link generated above
+2. Open V2Box app
+3. Tap `+` → `Import v2ray uri from clipboard`
+4. The config will be imported automatically
+5. Tap to connect
 
-### 4. Download Client Configs (Alternative - JSON Files)
-```bash
-./download_configs.sh
-```
+**For V2RayNG (Android):**
+1. Copy the VLESS link
+2. Open V2RayNG
+3. Tap `+` → `Import config from clipboard`
+4. Connect
 
-### 5. Convert Config Format (if needed)
-If you have configs in the old format, convert them to V2Box format:
-```bash
-python3 convert_to_v2box.py old_config.json > new_config.json
-```
+**For V2RayN (Windows):**
+1. Copy the VLESS link
+2. Open V2RayN
+3. Servers → Import bulk URL from clipboard
+4. Connect
 
-## 📱 Client Configurations
+### 3. Verify Connection
+Once connected, visit [https://ifconfig.me](https://ifconfig.me) to verify your IP shows as `140.245.51.205`.
 
-Three client configurations have been generated. You can import them into V2Box using either method:
-
-### Method 1: VLESS URI (Recommended - Easiest)
-Generate and copy VLESS URIs using:
-```bash
-./generate_vless_uris.sh
-```
-Or with custom names:
-```bash
-CLIENT_NAMES="iPhone,MacBook,Android" ./generate_vless_uris.sh
-```
-Then in V2Box: `+` → `Import v2ray uri from clipboard` → Paste URI
-
-### Method 2: JSON Files
-JSON configuration files are available in `~/Downloads/`:
-
-### Client 1 (Full V2Box Format)
-```json
-{
-  "log": {},
-  "inbounds": [
-      {
-        "port": 10808,
-        "tag": "socks",
-        "settings": {
-          "udp": true,
-          "userLevel": 8,
-          "auth": "noauth"
-        },
-        "listen": "127.0.0.1",
-        "protocol": "socks"
-      }
-    ],
-  "outbounds": [
-      {
-        "mux": {
-          "concurrency": 8,
-          "enabled": false
-        },
-        "streamSettings": {
-          "wsSettings": {
-            "path": "/vless",
-            "headers": {
-              "Host": "217.142.186.18"
-            }
-          },
-          "network": "ws",
-          "security": "none"
-        },
-        "tag": "proxy",
-        "settings": {
-          "vnext": [
-            {
-              "users": [
-                {
-                  "email": "",
-                  "level": 0,
-                  "encryption": "none",
-                  "id": "f5414710-1226-4fd7-ab00-8c2abb3e4edf",
-                  "flow": ""
-                }
-              ],
-              "port": 443,
-              "address": "217.142.186.18"
-            }
-          ]
-        },
-        "protocol": "vless"
-      },
-      {
-        "protocol": "freedom",
-        "settings": {},
-        "tag": "direct"
-      }
-    ],
-  "routing": {
-        "domainStrategy": "AsIs",
-        "rules": [
-            {
-              "outboundTag": "direct",
-              "type": "field",
-              "inboundTag": [
-                "directSocks"
-              ]
-            }
-          ]
-      }
-}
-```
-
-### Client 2 (Full V2Box Format)
-Contains the same structure as Client-1 but with UUID: `b84b349d-e8af-45d9-85d9-08bc561afb62`
-
-### Client 3 (Full V2Box Format)
-Contains the same structure as Client-1 but with UUID: `1b3374ba-71ca-4c7f-9287-f80451134b97`
-
-## 🛠️ Files and Scripts
+## � Project Files
 
 | File | Purpose |
 |------|---------|
-| `frontend/` | **NEW!** Web interface for config management |
-| `setup_vless_v2box.sh` | Main setup script for V2Ray + VLESS |
-| `generate_vless_uris.sh` | Generate VLESS URIs for copy-paste import |
-| `download_configs.sh` | Downloads client configs from server |
-| `convert_to_v2box.py` | Convert configs to V2Box format |
-| `README.md` | Complete documentation |
-| `QUICK_START.md` | Quick start guide |
-| `SETUP_GUIDE.md` | Detailed setup instructions |
-| `FIX_PUBLIC_IP.md` | IP configuration troubleshooting |
+| `generate_vless_links.sh` | Generate VLESS connection links |
+| `setup_vless_v2box.sh` | Original setup script (for reference) |
+| `CHANGE_IP_ORACLE.md` | Guide on changing server IP if blocked |
+| `ssh-key-2026-01-04.key` | SSH private key for server access |
 
-## 🔧 Maintenance Commands
+## 🔧 Server Configuration
+
+### Current Xray Config
+The server is running a simplified configuration:
+- **Inbound**: Port 80, VLESS protocol, TCP transport
+- **Outbound**: Direct (freedom protocol)
+- **DNS**: Google DNS (8.8.8.8, 8.8.4.4) and Cloudflare (1.1.1.1)
+- **Routing**: Blocks private IP ranges
+- **IP Forwarding**: Enabled
+- **NAT**: Configured with masquerading
+
+### Config Location
+```
+/usr/local/etc/xray/config.json
+```
+
+## �️ Maintenance Commands
 
 ### Check Server Status
 ```bash
-# SSH into server first
-ssh -i ~/.ssh/oracle-vless-key.pem ubuntu@217.142.186.18
+# SSH into server
+ssh -i ssh-key-2026-01-04.key ubuntu@140.245.51.205
 
-# Check V2Ray service
-sudo systemctl status v2ray.service
+# Check Xray service
+sudo systemctl status xray
 
-# Check if service is active
-sudo systemctl is-active v2ray.service
+# View real-time logs
+sudo journalctl -u xray -f
 ```
 
-### View Logs
+### Restart Xray Service
 ```bash
-# View V2Ray logs
-sudo journalctl -u v2ray.service -f
-
-# View recent logs
-sudo journalctl -u v2ray.service -n 50
+sudo systemctl restart xray
 ```
 
-### Restart Services
+### Verify IP Forwarding
 ```bash
-# Restart V2Ray
-sudo systemctl restart v2ray.service
+# Should return "1"
+sudo sysctl net.ipv4.ip_forward
 
-# Restart entire system
-sudo reboot
+# If not, enable it
+sudo sysctl -w net.ipv4.ip_forward=1
 ```
 
-### Update System
+### Check NAT Configuration
 ```bash
-# Update packages
-sudo apt update && sudo apt upgrade -y
-
-# Update V2Ray (if needed)
-sudo bash <(curl -L https://raw.githubusercontent.com/v2fly/fhs-install-v2ray/master/install-release.sh)
+sudo iptables -t nat -L -n -v
 ```
-
-## 📊 Server Configuration
-
-### V2Ray Config Location
-```
-/etc/v2ray/config.json
-```
-
-### Client Configs Location (on server)
-```
-/root/vless_client_configs/
-```
-
-### Service Management
-```bash
-# Enable V2Ray on boot
-sudo systemctl enable v2ray.service
-
-# Disable V2Ray on boot
-sudo systemctl disable v2ray.service
-```
-
-## 🧪 Testing
-
-### Test Server Connectivity
-```bash
-# Test WebSocket endpoint
-curl -v http://217.142.186.18:443/vless
-
-# Test with timeout
-curl --connect-timeout 10 http://217.142.186.18:443/vless
-```
-
-### Test from Client
-1. Import config into V2Box:
-   - **URI method**: Copy URI from `./generate_vless_uris.sh` → V2Box → `+` → `Import v2ray uri from clipboard`
-   - **JSON method**: Import JSON file from `~/Downloads/`
-2. Enable the connection
-3. Check if you can access blocked websites
-
-## 🔒 Security Notes
-
-### Current Security Setup
-- **TLS**: Disabled (running on IP only)
-- **Authentication**: UUID-based (VLESS protocol)
-- **Port**: 443 (standard HTTPS port)
-- **Firewall**: Oracle Cloud security groups
-
-### Recommended Security Improvements
-1. **Add TLS Certificate**:
-   - Get a domain name
-   - Run setup script with domain input
-   - Enables HTTPS encryption
-
-2. **Firewall Rules**:
-   - Ensure only port 443 is open
-   - Restrict SSH access to known IPs
-
-3. **Regular Updates**:
-   - Keep system packages updated
-   - Monitor V2Ray releases
 
 ## 🆘 Troubleshooting
 
-### Setup Script Issues
+### No Connection (Has Ping but No Internet)
+This was the issue we fixed! The solution:
 ```bash
-# Check if script exists
-ssh -i ~/.ssh/oracle-vless-key.pem ubuntu@217.142.186.18 "ls -la /tmp/setup_vless_v2box.sh"
+# Enable IP forwarding
+sudo sysctl -w net.ipv4.ip_forward=1
+echo "net.ipv4.ip_forward=1" | sudo tee -a /etc/sysctl.conf
 
-# Run with debugging
-ssh -i ~/.ssh/oracle-vless-key.pem ubuntu@217.142.186.18 "bash -x /tmp/setup_vless_v2box.sh"
+# Configure NAT (replace ens3 with your network interface if different)
+sudo iptables -t nat -A POSTROUTING -o ens3 -j MASQUERADE
+sudo netfilter-persistent save
+
+# Restart Xray
+sudo systemctl restart xray
 ```
 
-### Connection Issues
+### Server IP Blocked by ISP
+If your ISP has blocked the server IP (`140.245.51.205`):
+
+1. Follow the guide in `CHANGE_IP_ORACLE.md`
+2. Get a new IP from Oracle Cloud Console
+3. Regenerate links with: `./generate_vless_links.sh`
+
+### Connection Works Initially but Stops
+Check that Xray is running:
 ```bash
-# Check V2Ray status
-sudo systemctl status v2ray.service
-
-# Check logs
-sudo journalctl -u v2ray.service -n 20
-
-# Test port connectivity
-telnet 217.142.186.18 443
+sudo systemctl status xray
 ```
 
-### Client Import Issues
-- Ensure JSON format is correct
-- Check UUID matches server config
-- Verify server IP and port
-
-## 💰 Cost Information
-
-### Oracle Cloud Free Tier
-- **VM.Standard.A1.Flex**: 2 AMD-based VMs, 1/8 OCPU and 1 GB memory each
-- **Always Free**: As long as usage stays within limits
-- **Additional Resources**: Pay-as-you-go beyond free tier
-
-### Current Usage
-- **Instance**: R2D2-Vless-Server
-- **Shape**: VM.Standard.A1.Flex (4 OCPU, 24 GB RAM)
-- **OS**: Ubuntu 22.04.1 LTS (aarch64)
-
-## 🔄 Backup and Recovery
-
-### Backup Important Files
+If it's stopped, restart it:
 ```bash
-# Backup server config
-ssh -i ~/.ssh/oracle-vless-key.pem ubuntu@217.142.186.18 "sudo cp /etc/v2ray/config.json /root/v2ray-config-backup.json"
-
-# Backup client configs
-scp -i ~/.ssh/oracle-vless-key.pem ubuntu@217.142.186.18:/root/vless_client_configs/*.json ~/backups/
+sudo systemctl restart xray
 ```
 
-### Recovery
-1. If server is lost, create new Oracle instance
-2. Upload SSH key and setup script
-3. Run setup script with same parameters
-4. Import client configs
-
-## 📝 Notes
-
-- **Last Setup**: January 4, 2026
-- **V2Ray Version**: Latest available via fhs-install-v2ray
-- **Client App**: V2Box (iOS/Android)
-- **WebSocket Path**: `/vless`
-
-## 🌐 Web Interface (Frontend)
-
-The project now includes a modern Next.js web interface for managing your VLESS configurations:
-
-### Features
-- **Server Monitoring**: Real-time server status and V2Ray service monitoring
-- **Config Management**: View server configuration and client details through a clean UI
-- **VLESS URI Generator**: One-click generation and copying of VLESS URIs for V2Box import
-- **Config Downloader**: Download V2Box-compatible JSON configuration files
-- **Ping Testing**: Automatic connectivity testing with color-coded status indicators
-- **Responsive Design**: Works on desktop and mobile devices
-- **Dark Mode**: Modern UI with dark theme support
-
-### Quick Start
+### Debug Mode
+To see detailed connection logs:
 ```bash
-cd frontend
-npm install
-cp env-example.txt .env.local
-# Edit .env.local with your server details
-npm run dev
-# Open http://localhost:3000
+# SSH into server
+ssh -i ssh-key-2026-01-04.key ubuntu@140.245.51.205
+
+# Watch logs in real-time
+sudo journalctl -u xray -f
 ```
 
-### Architecture
-- **Frontend**: Next.js 14 with TypeScript and Tailwind CSS
-- **Backend**: Next.js API routes handle SSH communication with your server
-- **Security**: Direct SSH connection to your VPS (no sensitive data stored)
-- **State Management**: React Query for efficient data fetching and caching
+Then try connecting from your client. You should see connection attempts in the logs.
 
-## 🤝 Contributing
+## 🔒 Security Notes
 
-To modify or improve this setup:
+### Current Security Posture
+- **No TLS/Encryption**: For maximum compatibility and reliability
+- **UUID Authentication**: Only clients with the correct UUID can connect
+- **Firewall**: Oracle Cloud security lists control access
+- **IP Forwarding**: Enabled for routing client traffic
 
-1. Edit `setup_vless_v2box.sh` for server changes
-2. Update client configs by re-running setup
-3. Modify `frontend/` for UI improvements
-4. Test thoroughly before deploying
-5. Update this README with any changes
+### Why No Encryption?
+We chose to disable TLS/encryption for this setup because:
+1. Maximum compatibility across all clients and networks
+2. Simpler troubleshooting
+3. Many ISPs have issues with certain TLS configurations
+4. The main goal is bypassing censorship, not hiding from sophisticated attackers
+
+**Note**: If you need encryption, consider these upgrades:
+- Add a domain name and enable TLS
+- Use VLESS-Reality (requires Xray-core support in client)
+- Use WebSocket + TLS (requires domain and certificate)
+
+## 📊 Technical Specifications
+
+### Server Info
+- **Instance**: Oracle Cloud Free Tier
+- **OS**: Ubuntu 22.04 LTS (ARM64)
+- **Xray Version**: 25.12.8
+- **Go Version**: 1.25.5
+- **Network Interface**: ens3
+- **Private IP**: 10.0.0.121
+- **Public IP**: 140.245.51.205
+
+### Client UUID
+```
+f5414710-1226-4fd7-ab00-8c2abb3e4edf
+```
+
+**Important**: This UUID is hardcoded in the server config. If you want to add more clients, you'll need to edit `/usr/local/etc/xray/config.json` on the server.
+
+## 🔄 Changing Server IP
+
+If your current IP is blocked by your ISP, follow these steps:
+
+1. Go to Oracle Cloud Console
+2. Navigate to your instance → Attached VNICs
+3. Edit IPv4 Address → Set to "No Public IP" → Save
+4. Edit IPv4 Address again → Set to "Ephemeral Public IP" → Save
+5. Note your new IP address
+6. Run: `SERVER_IP=<new_ip> ./generate_vless_links.sh`
+
+See `CHANGE_IP_ORACLE.md` for detailed instructions with screenshots.
+
+## � Tips for Best Performance
+
+1. **Choose the right client app**:
+   - iOS: V2Box
+   - Android: V2RayNG or V2Box
+   - Windows: V2RayN
+   - macOS: V2RayX or V2RayU
+
+2. **Test your connection**:
+   - Use the "ping" or "test" feature in your client app
+   - Should show latency < 300ms for good performance
+
+3. **If connection is slow**:
+   - Check that you're actually routing through the VPN (visit ifconfig.me)
+   - Restart the Xray service on the server
+   - Try changing your Oracle Cloud region
+
+## 📝 Change Log
+
+### 2026-01-08 (Current)
+- **IP Changed**: `217.142.186.18` → `140.245.51.205` (old IP blocked by ISP)
+- **Core Upgrade**: V2Ray → Xray 25.12.8
+- **Config Simplified**: Removed multi-port setup, using single port 80
+- **Fixed**: IP forwarding issue (server accepted connections but no internet)
+- **Fixed**: NAT configuration for routing client traffic
+- **Updated**: Link generator to produce simple, working VLESS URIs
+
+### 2026-01-04 (Original)
+- Initial setup with V2Ray
+- WebSocket + Reality configurations
+- Multiple client UUIDs
 
 ---
 
-**Status**: ✅ Server is active and running
-**Last Updated**: January 4, 2026
-**Maintainer**: Local setup</contents>
-</xai:function_call">Write
+**Status**: ✅ Server is active and working perfectly
+**Last Updated**: January 8, 2026, 04:30 AM
+**Last Verified**: Connection working with simplified TCP config
